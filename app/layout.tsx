@@ -1,9 +1,8 @@
 import './globals.css';
 
-import Link from 'next/link';
-import { Analytics } from '@vercel/analytics/react';
 import { Logo, SettingsIcon, UsersIcon, VercelLogo } from '@/components/icons';
-import { User } from './user';
+import { Analytics } from '@vercel/analytics/react';
+import Link from 'next/link';
 import { NavItem } from './nav-item';
 
 export const metadata = {
@@ -59,7 +58,7 @@ export default function RootLayout({
                 <Logo />
                 <span className="">ACME</span>
               </Link>
-              <User />
+              {/* <User /> */}
             </header>
             {children}
           </div>

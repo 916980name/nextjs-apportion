@@ -13,6 +13,7 @@
     "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
     "@vercel/analytics": "^1.2.2",
+    "@vercel/kv": "^0.2.2",
     "autoprefixer": "^10.4.19",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -26,11 +27,14 @@
     "prop-types": "^15.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-router-dom": "^6.15.0",
     "server-only": "^0.0.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "nanoid": "^5.0.3",
+    "zustand": "^4.3.8"
   },
   "prettier": {
     "arrowParens": "always",
