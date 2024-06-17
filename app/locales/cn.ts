@@ -12,6 +12,10 @@ const cn = {
     Input: "在此处填写访问码",
     Confirm: "确认",
     Later: "稍后再说",
+    SaveUserName: "保存用户名"
+  },
+  Activity: {
+    Title: "活动",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -112,12 +116,15 @@ const cn = {
     ResetConfirm: "确认清空历史摘要？",
   },
   Home: {
+    AppName: "分摊计算",
+    Title: "主页",
     NewChat: "新的聊天",
     DeleteChat: "确认删除选中的对话？",
     DeleteToast: "已删除会话",
     Revert: "撤销",
   },
   Settings: {
+    UserName: "用户名",
     Title: "设置",
     SubTitle: "所有设置选项",
 

@@ -14,6 +14,10 @@ const en: LocaleType = {
     Input: "access code",
     Confirm: "Confirm",
     Later: "Later",
+    SaveUserName: "Save your username"
+  },
+  Activity: {
+    Title: "Activity",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -115,12 +119,15 @@ const en: LocaleType = {
       "Resetting will clear the current conversation history and historical memory. Are you sure you want to reset?",
   },
   Home: {
+    AppName: "APPORTION",
+    Title: "Home",
     NewChat: "New Chat",
     DeleteChat: "Confirm to delete the selected conversation?",
     DeleteToast: "Chat Deleted",
     Revert: "Revert",
   },
   Settings: {
+    UserName: "username",
     Title: "Settings",
     SubTitle: "All Settings",
     Danger: {
