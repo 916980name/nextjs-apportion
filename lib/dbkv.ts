@@ -1,16 +1,22 @@
-import { kv } from '@vercel/kv';
-import { getFormattedDate } from 'app/utils/calcu';
-import { Activity } from 'app/utils/store';
-import { nanoid } from "nanoid";
-import { NextResponse } from 'next/server';
+'use server';
 
-const ACTIVITY_KEY_PREFIX = 'act:' 
+import { kv } from '@vercel/kv';
+import { checkObjectIsEmpty, generateActivityCode } from 'app/utils/calcu';
+import { Activity, ActivitySummerize } from 'app/utils/store';
+
+const ACTIVITY_KEY_PREFIX = 'act:'
 const ACTIVITY_OWNER_KEY_PREFIX = 'own:'
 const DEFAULT_TTL = 60 * 60 * 6; // 6 hour
- 
+
 export async function GET_activity(code: string) {
   const obj = await kv.get(ACTIVITY_KEY_PREFIX + code);
-  return NextResponse.json(obj);
+  if (checkObjectIsEmpty(obj)) {
+    // return NextResponse.json(null, { status: 404 });
+    return null;
+  } else {
+    // return NextResponse.json(JSON.stringify(obj));
+    return obj;
+  }
 }
 
 export async function CHECK_owner(code: string, secret: string) {
@@ -19,19 +25,19 @@ export async function CHECK_owner(code: string, secret: string) {
 }
 
 export async function SET_new_activity(act: Activity) {
-  const code = getFormattedDate() + nanoid(9);
+  const code = generateActivityCode();
   const ok = await kv.setex(ACTIVITY_KEY_PREFIX + code, DEFAULT_TTL, act);
-  if(ok) {
+  if (ok) {
     return code;
   }
   return null;
 }
 
-export async function SET_activity(code: string, act: Activity) {
-  const remote = GET_activity(code);
-  if(!remote) {
-    return false;
-  }
-  const ok = await kv.setex(ACTIVITY_KEY_PREFIX + code, DEFAULT_TTL, act);
+export async function SET_activity(act: ActivitySummerize) {
+  // const remote = GET_activity(code);
+  // if(!remote) {
+  //   return false;
+  // }
+  const ok = await kv.setex(ACTIVITY_KEY_PREFIX + act.code, DEFAULT_TTL, act);
   return ok;
 }

@@ -18,6 +18,20 @@ const en: LocaleType = {
   },
   Activity: {
     Title: "Activity",
+    Code: "activity code",
+    Count: "activities count",
+    CreateTime: "create time",
+    Creater: "creater",
+    Table: "Activities Records",
+    New: "New",
+    AddOne: "Add One",
+    Name: "Activity name",
+    Cost: "Cost",
+    Participant: "Participant",
+    ParticipantCount: "Participant Number",
+    Apportion: "Apportion",
+    Upload: "Upload to Cloud",
+    Sync: "Sync from Cloud"
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -120,6 +134,7 @@ const en: LocaleType = {
   },
   Home: {
     AppName: "APPORTION",
+    Description: "The user can calculate the amount each person should pay for group activities",
     Title: "Home",
     NewChat: "New Chat",
     DeleteChat: "Confirm to delete the selected conversation?",

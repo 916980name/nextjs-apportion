@@ -16,6 +16,20 @@ const cn = {
   },
   Activity: {
     Title: "活动",
+    Code: "活动编号",
+    Count: "活动数量",
+    CreateTime: "创建时间",
+    Creater: "创建人",
+    Table: "活动记录表",
+    New: "新建",
+    AddOne: "添加一个",
+    Name: "活动名称",
+    Cost: "消费金额",
+    Participant: "参与者名称",
+    ParticipantCount: "参与者数量",
+    Apportion: "均摊费用",
+    Upload: "上传活动信息",
+    Sync: "同步活动信息"
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -117,6 +131,7 @@ const cn = {
   },
   Home: {
     AppName: "分摊计算",
+    Description: "用户可以计算多人活动的每个人应付金额",
     Title: "主页",
     NewChat: "新的聊天",
     DeleteChat: "确认删除选中的对话？",

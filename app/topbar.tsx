@@ -2,25 +2,47 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Locale from "./locales";
 
 const Topbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const handleResize = () => {
+    //   setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 500);
+    };
+
+    // Set the initial screen size
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup the event listener
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleLinkClick = () => {
-    setIsOpen(false);
+    if (isMobile) {
+      setIsOpen(false);
+    }
   };
 
   return (
     <nav className="bg-blue-500 p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-lg font-bold">{Locale.Home.AppName}</div>
-        <div className="hidden md:flex space-x-4">
+        <div className={`flex space-x-4 ${isMobile ? 'hidden' : 'block'}`}>
           <Link href="/" className="text-white hover:bg-blue-700 px-3 py-2 rounded">{Locale.Home.Title}</Link>
           <Link href="/settings" className="text-white hover:bg-blue-700 px-3 py-2 rounded">{Locale.Settings.Title}</Link>
           <Link href="/activity" className="text-white hover:bg-blue-700 px-3 py-2 rounded">{Locale.Activity.Title}</Link>
         </div>
-        <div className="md:hidden">
+        <div className={`${isMobile ? 'block' : 'hidden'} md:hidden`}>
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-white focus:outline-none"

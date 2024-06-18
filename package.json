@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbo -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,7 +13,7 @@
     "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
     "@vercel/analytics": "^1.2.2",
-    "@vercel/kv": "^0.2.2",
+    "@vercel/kv": "^2.0.0",
     "autoprefixer": "^10.4.19",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
