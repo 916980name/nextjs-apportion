@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GET_activity, SET_activity } from "@/lib/dbkv";
 import Loading from "app/loading";
-import { stringToFloat2 } from "app/utils/calcu";
-import { Activity, ActivityItemRequest, ActivityRequest, ActivitySummerize, emptyActivity, useActivityStore } from "app/utils/store";
+import { checkObjectIsEmpty, divideWithScale, numberWithScale, stringToFloat2 } from "app/utils/calcu";
+import { Activity, ActivityItemRequest, ActivityRequest, ActivitySummerize, emptyActivity, emptyActivitySummerize, useActivityStore } from "app/utils/store";
 import { useEffect, useState } from "react";
 import Locale from "../../locales";
 
@@ -37,11 +37,15 @@ function ActivityCodePage({ params }
     const removeItem: (req: ActivityItemRequest) => void = useActivityStore((state) => state.removeItem);
     const username = useActivityStore((state) => state.username);
 
-    const [activitySum, setActivitySum] = useState<ActivitySummerize>(getActivitySum(params.code));
+    // const [activitySum, setActivitySum] = useState<ActivitySummerize>(getActivitySum(params.code));
+    // const [activityList, setActivityList] = useState<ActivityShadow[]>(() => initActivityList(activitySum));
+    const [activitySum, setActivitySum] = useState<ActivitySummerize>(emptyActivitySummerize);
     const [activityList, setActivityList] = useState<ActivityShadow[]>(() => initActivityList(activitySum));
     const [activity, setActivity] = useState<Activity>(emptyActivity());
     const [activityShow, setActivityShow] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
+    const [calculating, setCalculating] = useState(false);
+    const [shouldPayMap, setShouldPayMap] = useState(new Map());
 
     const refreshData = () => {
         const data = getActivitySum(params.code);
@@ -50,6 +54,10 @@ function ActivityCodePage({ params }
             setActivityList(initActivityList(data));
         }
     }
+
+    useEffect(() => {
+        doSync();
+    }, [])
 
     useEffect(() => {
         refreshData()
@@ -92,11 +100,11 @@ function ActivityCodePage({ params }
     }
 
     const setItem = (activity: ActivityShadow, count: number, user: string) => {
-        if (count < - 0) return;
+        if (count <= 0) return;
         const updatedList = [...activityList];
         const foundActivity = updatedList.find(a => a.name === activity.name);
         if (!foundActivity) return;
-        foundActivity.shadow = { show: true, count: count, user: username }
+        foundActivity.shadow = { show: true, count: count, user: user }
         setActivityList(updatedList);
     }
 
@@ -105,7 +113,7 @@ function ActivityCodePage({ params }
             code: params.code,
             name: activity.name,
             item: {
-                user: username,
+                user: activity.shadow.user,
                 count: activity.shadow.count,
                 money: 0
             }
@@ -152,9 +160,12 @@ function ActivityCodePage({ params }
 
     const doSync = () => {
         setLoading(true);
+        console.log('Activity Sync:' + params.code);
         GET_activity(params.code)
             .then((response) => {
-                setStoreActivitySum(response);
+                if (!checkObjectIsEmpty(response)) {
+                    setStoreActivitySum(response);
+                }
                 refreshData();
             }).catch((e) => {
                 console.log('Activity Sync:' + params.code + ', ' + e);
@@ -162,6 +173,29 @@ function ActivityCodePage({ params }
             .finally(() => {
                 setLoading(false);
             })
+    }
+
+    const doCalculate = () => {
+        setCalculating(true)
+        const data = { ...activitySum };
+        const resultMap: Map<string, number> = new Map();
+
+        data.list.map((activity) => {
+            const sum: number = activity.people.reduce((acc, obj) => acc + obj.count, 0);
+            const eachPay: number = divideWithScale(activity.money, sum, 2);
+            activity.people.map((people) => {
+                people.money = numberWithScale(eachPay * people.count, 2);
+                if (resultMap.has(people.user)) {
+                    resultMap.set(people.user, numberWithScale(resultMap.get(people.user)! + people.money, 2));
+                } else {
+                    resultMap.set(people.user, people.money);
+                }
+            })
+        })
+        setShouldPayMap(resultMap);
+        setStoreActivitySum(data);
+        refreshData();
+        setCalculating(false)
     }
 
     return (
@@ -175,12 +209,13 @@ function ActivityCodePage({ params }
                         {Locale.Activity.Creater}: {activitySum.creater}
                     </div>
                     <div>
-                        {Locale.Activity.CreateTime}: {activitySum.createTime.toLocaleString('en-US')}
+                        {Locale.Activity.CreateTime}: {activitySum?.createTime.toLocaleString('en-US')}
                     </div>
                 </div>
                 <div>
                     <Button onClick={doUpload}>{Locale.Activity.Upload}</Button>
                     <Button onClick={doSync}>{Locale.Activity.Sync}</Button>
+                    <Button onClick={doCalculate}>{Locale.Activity.Calculate}</Button>
                 </div>
             </div>
             <div>
@@ -192,20 +227,20 @@ function ActivityCodePage({ params }
                             <div>{shadow.name}</div>
                             <div>{Locale.Activity.Cost} {shadow.money}</div>
                             <Button onClick={() => handleAddItem(shadow)}>{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
-                            <Button onClick={() => handleRemoveAct(shadow)}>Remove {Locale.Activity.Title}</Button>
+                            <Button onClick={() => handleRemoveAct(shadow)}>{Locale.UI.Remove}{Locale.Activity.Title}</Button>
                         </div>
                         {shadow.people.map((people, index) => (
                             <div key={people.user} className="flex justify-between items-center">
                                 <div>{Locale.Activity.Participant} {people.user}</div>
                                 <div>{Locale.Activity.ParticipantCount}: {people.count}</div>
                                 <div>{Locale.Activity.Apportion}: {people.money}</div>
-                                <Button onClick={() => handleRemoveItem(shadow)}>Remove</Button>
+                                <Button onClick={() => handleRemoveItem(shadow)}>{Locale.UI.Remove}</Button>
                             </div>
                         ))}
                         {shadow.shadow.show &&
                             <div>
-                                <div>{Locale.Activity.Participant}: {username}
-                                    <Input type="text" placeholder={Locale.Activity.ParticipantCount} value={shadow.shadow.user}
+                                <div>
+                                    <Input type="text" placeholder={Locale.Activity.Participant} value={shadow.shadow.user}
                                         onChange={(e) => setItem(shadow, shadow.shadow.count, e.currentTarget.value.trim())} />
                                 </div>
                                 <div>
@@ -213,8 +248,8 @@ function ActivityCodePage({ params }
                                         onChange={(e) => setItem(shadow, parseInt(e.currentTarget.value.trim()), shadow.shadow.user)} />
                                 </div>
                                 <div className="flex justify-between items-right">
-                                    <Button onClick={() => confirmAddItem(shadow)}>confirm</Button>
-                                    <Button onClick={() => cancelAddItem(shadow)}>cancel</Button>
+                                    <Button onClick={() => confirmAddItem(shadow)}>{Locale.UI.Confirm}</Button>
+                                    <Button onClick={() => cancelAddItem(shadow)}>{Locale.UI.Cancel}</Button>
                                 </div>
                             </div>
                         }
@@ -232,14 +267,35 @@ function ActivityCodePage({ params }
                                 onChange={(e) => setActivity({ ...activity, money: stringToFloat2(e.currentTarget.value.trim()) })} />
                         </div>
                         <div className="flex justify-between items-right">
-                            <Button onClick={confirmAddAct}>confirm</Button>
-                            <Button onClick={cancelAddAct}>cancel</Button>
+                            <Button onClick={confirmAddAct}>{Locale.UI.Confirm}</Button>
+                            <Button onClick={cancelAddAct}>{Locale.UI.Cancel}</Button>
                         </div>
                     </div>
                 }
                 {!loading && <Button onClick={handleAddAct}>{Locale.Activity.AddOne} {Locale.Activity.Title}</Button>}
+
+                {!loading &&
+                    <div>
+                        <div>
+                            <UserMapComponent userMap={shouldPayMap}/>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     );
 }
+
+const UserMapComponent = ({ userMap } : {userMap: Map<string, number>}) => (
+    <div>
+        <h1>{Locale.Activity.ShouldPay}</h1>
+        <ul>
+            {Array.from(userMap).map(([username, money]) => (
+                <li key={username}>
+                    <strong>{username}</strong> : <strong>{money}</strong>
+                </li>
+            ))}
+        </ul>
+    </div>
+);
 export default ActivityCodePage;

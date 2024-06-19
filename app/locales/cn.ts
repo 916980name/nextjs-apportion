@@ -29,7 +29,9 @@ const cn = {
     ParticipantCount: "参与者数量",
     Apportion: "均摊费用",
     Upload: "上传活动信息",
-    Sync: "同步活动信息"
+    Sync: "同步活动信息",
+    Calculate: "计算分摊",
+    ShouldPay: "总计应该支付"
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -488,6 +490,7 @@ const cn = {
     Import: "导入",
     Sync: "同步",
     Config: "配置",
+    Remove: "移除",
   },
   Exporter: {
     Description: {

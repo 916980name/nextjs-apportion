@@ -81,10 +81,12 @@ function addActivity(activities: ActivitySummerize[], req: ActivityRequest): Act
     return activities;
   }
   const foundActivitySum = activities.find(activity => activity.code === req.sum.code);
-  if (!foundActivitySum) {
+  if (foundActivitySum) {
+    foundActivitySum.list.push(req.item);
     return activities;
   }
-  foundActivitySum.list.push(req.item);
+  req.sum.list = [req.item];
+  activities.push(req.sum);
   return activities;
 }
 
@@ -94,6 +96,14 @@ function initActivitySummerize(code: string, username: string): ActivitySummeriz
     createTime: new Date(),
     creater: username,
     list: [],
+  };
+}
+export function emptyActivitySummerize(): ActivitySummerize{
+  return {
+    code: '',
+    createTime: new Date(),
+    creater: '',
+    list: []
   };
 }
 export function emptyActivity(): Activity{

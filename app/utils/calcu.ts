@@ -20,6 +20,10 @@ export function stringToFloat2(str: string): number {
   return parseFloat(floatNum.toFixed(2));
 }
 
+export function numberWithScale(n: number, scale: number): number {
+  return Number(n.toFixed(scale));
+}
+
 export function divideWithScale(dividend: number, divisor: number, scale: number): number {
   const result = dividend / divisor;
   const roundedResult = Number(result.toFixed(scale));

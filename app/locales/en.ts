@@ -31,7 +31,9 @@ const en: LocaleType = {
     ParticipantCount: "Participant Number",
     Apportion: "Apportion",
     Upload: "Upload to Cloud",
-    Sync: "Sync from Cloud"
+    Sync: "Sync from Cloud",
+    Calculate: "Calculate Apportion",
+    ShouldPay: "Should Pay"
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -490,6 +492,7 @@ const en: LocaleType = {
     Import: "Import",
     Sync: "Sync",
     Config: "Config",
+    Remove: "Remove",
   },
   Exporter: {
     Description: {
