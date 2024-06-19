@@ -39,7 +39,6 @@ function ActivityCodePage({ params }
     const removeItem: (req: ActivityItemRequest) => void = useActivityStore((state) => state.removeItem);
     const username = useActivityStore((state) => state.username);
 
-    const fullUrl = window.location.hostname + usePathname();
     const shouldPayRef = useRef<HTMLDivElement>(null);
     const addActRef = useRef<HTMLDivElement>(null);
     const [activitySum, setActivitySum] = useState<ActivitySummerize>(emptyActivitySummerize);
@@ -49,6 +48,7 @@ function ActivityCodePage({ params }
     const [loading, setLoading] = useState(false);
     const [calculating, setCalculating] = useState(false);
     const [shouldPayMap, setShouldPayMap] = useState(new Map());
+    let fullUrl = '';
 
     const refreshData = () => {
         const data = getActivitySum(params.code);
@@ -60,6 +60,7 @@ function ActivityCodePage({ params }
 
     useEffect(() => {
         doSync();
+        fullUrl = window.location.hostname + usePathname();
     }, [])
 
     useEffect(() => {
