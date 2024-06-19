@@ -48,7 +48,8 @@ function ActivityCodePage({ params }
     const [loading, setLoading] = useState(false);
     const [calculating, setCalculating] = useState(false);
     const [shouldPayMap, setShouldPayMap] = useState(new Map());
-    let fullUrl = '';
+    const [fullUrl, setFullUrl] = useState('');
+    const pathName = usePathname();
 
     const refreshData = () => {
         const data = getActivitySum(params.code);
@@ -60,7 +61,7 @@ function ActivityCodePage({ params }
 
     useEffect(() => {
         doSync();
-        fullUrl = window.location.hostname + usePathname();
+        setFullUrl(window.location.hostname + pathName);
     }, [])
 
     useEffect(() => {
@@ -227,10 +228,10 @@ function ActivityCodePage({ params }
                     </div>
                 </div>
                 <div className="columns-2">
-                    <Button onClick={doUpload} className="mx-1 my-1">{Locale.Activity.Upload}</Button>
-                    <Button onClick={doSync} className="mx-1 my-1">{Locale.Activity.Sync}</Button>
-                    <Button onClick={doCalculate} className="mx-1 my-1">{Locale.Activity.Calculate}</Button>
-                    <ClipboardCopy copyText={fullUrl} className="mx-1 my-1"/>
+                    <Button onClick={doUpload} disabled={loading} className="mx-1 my-1 bg-cyan-600">{Locale.Activity.Upload}</Button>
+                    <Button onClick={doSync} disabled={loading} className="mx-1 my-1 bg-cyan-600">{Locale.Activity.Sync}</Button>
+                    <Button onClick={doCalculate} disabled={loading} className="mx-1 my-1 bg-rose-700">{Locale.Activity.Calculate}</Button>
+                    <ClipboardCopy copyText={fullUrl} className="mx-1 my-1" />
                 </div>
             </div>
             <div>
@@ -276,7 +277,7 @@ function ActivityCodePage({ params }
                         }
                     </div>
                 ))}
-                
+
                 {!loading && activityShow &&
                     <div className="rounded-md shadow-md my-3 mx-1 py-3 px-1">
                         <div>{Locale.Activity.AddOne} {Locale.Activity.Title}</div>
@@ -298,7 +299,7 @@ function ActivityCodePage({ params }
 
                 {!loading &&
                     <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-1">
-                        <Button onClick={handleAddAct} className={"bg-cblue"}
+                        <Button onClick={handleAddAct} disabled={loading} className={"bg-cblue"}
                         >{Locale.Activity.AddOne} {Locale.Activity.Title}</Button>
                     </div>
                 }

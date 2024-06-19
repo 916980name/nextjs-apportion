@@ -12,7 +12,7 @@ export async function GET_activity(code: string): Promise<ActivitySummerize> {
   const obj = await kv.get(ACTIVITY_KEY_PREFIX + code);
   if (checkObjectIsEmpty(obj)) {
     // return NextResponse.json(null, { status: 404 });
-    return Promise.reject("Empty Obj");
+    throw new Error("Null Obj");
   } else {
     // return NextResponse.json(JSON.stringify(obj));
     return obj as ActivitySummerize;

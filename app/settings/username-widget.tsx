@@ -22,11 +22,15 @@ export function UserNameComponent({ handleChangeSuc }: { handleChangeSuc?: handl
     };
 
     return (
-        <div>
+        <>
+        <div className="flex justify-between items-center">
             {Locale.Settings.UserNameDescription}
+        </div>
             <Input type="text" placeholder={Locale.Settings.UserName} value={username}
                 onChange={(e) => { setUsername(e.currentTarget.value.trim()) }} />
+        <div className="flex justify-between items-center">
             <Button onClick={checkUsername}>{Locale.Auth.SaveUserName}</Button>
         </div>
+        </>
     );
 }

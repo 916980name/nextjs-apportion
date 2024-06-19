@@ -33,7 +33,7 @@ const en: LocaleType = {
     Upload: "Save to Cloud",
     Sync: "Sync from Cloud",
     Calculate: "Calculate Apportion",
-    ShouldPay: "Should Pay",
+    ShouldPay: "EveryOne Should Pay",
     Share: "Share Link",
     CopiedShare: "Copied Link",
   },

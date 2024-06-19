@@ -31,7 +31,7 @@ const cn = {
     Upload: "保存活动信息",
     Sync: "下载活动信息",
     Calculate: "计算分摊",
-    ShouldPay: "总计应该支付",
+    ShouldPay: "每个人应该支付",
     Share: "分享此活动",
     CopiedShare: "已复制链接",
   },
