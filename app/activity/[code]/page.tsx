@@ -240,11 +240,11 @@ function ActivityCodePage({ params }
                     <div className="border border-solid border-slate-300 rounded-md my-3 py-2 px-2">
                         {/* <div key={shadow.name} className="flex justify-between items-center pb-2 border-b-2 border-b-sky-200"> */}
                         {/** ERROR here */}
-                        <div key={shadow.name}>
+                        <div key={shadow.name} className="pb-2 border-b-2 border-b-sky-200">
                             <div className="columns-3">
-                                <div>{Locale.Activity.Title} {index + 1}</div>
-                                <div>{shadow.name}</div>
-                                <div>{Locale.Activity.Cost} {shadow.money}</div>
+                                <div className="font-semibold text-md">{Locale.Activity.Title} {index + 1}</div>
+                                <div className="font-semibold text-md">{shadow.name}</div>
+                                <div className="font-semibold text-md">{Locale.Activity.Cost} {shadow.money}</div>
                             </div>
                             <div className="columns-2 flex justify-end">
                                 <Button className="bg-cblue mx-1" onClick={() => handleAddItem(shadow)}>{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
