@@ -25,13 +25,15 @@ const cn = {
     AddOne: "添加一个",
     Name: "活动名称",
     Cost: "消费金额",
-    Participant: "参与者名称",
+    Participant: "参与者",
     ParticipantCount: "参与者数量",
     Apportion: "均摊费用",
-    Upload: "上传活动信息",
-    Sync: "同步活动信息",
+    Upload: "保存活动信息",
+    Sync: "下载活动信息",
     Calculate: "计算分摊",
-    ShouldPay: "总计应该支付"
+    ShouldPay: "总计应该支付",
+    Share: "分享此活动",
+    CopiedShare: "已复制链接",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -142,6 +144,7 @@ const cn = {
   },
   Settings: {
     UserName: "用户名",
+    UserNameDescription: "请设置一个用户名，该用户名将用于标识活动的参与者",
     Title: "设置",
     SubTitle: "所有设置选项",
 

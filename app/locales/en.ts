@@ -30,10 +30,12 @@ const en: LocaleType = {
     Participant: "Participant",
     ParticipantCount: "Participant Number",
     Apportion: "Apportion",
-    Upload: "Upload to Cloud",
+    Upload: "Save to Cloud",
     Sync: "Sync from Cloud",
     Calculate: "Calculate Apportion",
-    ShouldPay: "Should Pay"
+    ShouldPay: "Should Pay",
+    Share: "Share Link",
+    CopiedShare: "Copied Link",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -145,6 +147,7 @@ const en: LocaleType = {
   },
   Settings: {
     UserName: "username",
+    UserNameDescription: "Please set a username that identifies the participants of the Activity",
     Title: "Settings",
     SubTitle: "All Settings",
     Danger: {
