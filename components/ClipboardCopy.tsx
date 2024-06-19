@@ -2,7 +2,8 @@ import { useState } from "react";
 import Locale from "../app/locales";
 import { Button } from "./ui/button";
 
-export default function ClipboardCopy({ copyText }: {copyText: string}) {
+export default function ClipboardCopy({ copyText, className }: 
+    {copyText: string, className?: string}) {
     const [isCopied, setIsCopied] = useState(false);
 
     // This is the function we wrote earlier
@@ -31,7 +32,7 @@ export default function ClipboardCopy({ copyText }: {copyText: string}) {
     }
 
     return (
-        <Button variant="outline" onClick={handleCopyClick} size={'sm'}>
+        <Button variant="outline" onClick={handleCopyClick} size={'sm'} className={className}>
             {isCopied ? Locale.Activity.CopiedShare : Locale.Activity.Share}
         </Button>
     );

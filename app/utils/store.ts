@@ -32,16 +32,31 @@ export type ActivitySummerize = {
   list: Activity[];
 }
 
-export const useActivityStore = create(
+interface ActivityStoreState {
+  secret: string, // have authority to 
+  username: string,
+  activities: ActivitySummerize[],
+  setSecret: (newSecret: string) => void,
+  setUsername: (newUsername: string) => void,
+  getActivitySum: (code: string) => ActivitySummerize,
+  setActivitySum: (act: ActivitySummerize) => void,
+  addActivity: (req: ActivityRequest) => void,
+  removeActivity: (req: ActivityRequest) => void,
+  addItem: (req: ActivityItemRequest) => void,
+  removeItem: (req: ActivityItemRequest) => void,
+  removeAll: () => void,
+}
+
+export const useActivityStore = create<ActivityStoreState>()(
   persist(
     (set, get) => ({
-      secret: '' as string, // have authority to 
-      username: '' as string,
-      activities: [] as ActivitySummerize[],
+      secret: '', 
+      username: '',
+      activities: [],
       setSecret: (newSecret: string) => set((state) => ({ ...state, secret: newSecret })),
       setUsername: (newUsername: string) => set((state) => ({ ...state, username: newUsername })),
       getActivitySum: (code: string) => getActivitySum(get().activities, get().username, code),
-      setActivitySum: (act: ActivitySummerize) => set((state) => ({...state, activities: setActivitySum(state.activities, act)})),
+      setActivitySum: (act: ActivitySummerize) => set((state) => ({ ...state, activities: setActivitySum(state.activities, act) })),
       addActivity: (req: ActivityRequest) => set((state) => ({ ...state, activities: addActivity(state.activities, req) })),
       removeActivity: (req: ActivityRequest) => set((state) => ({ ...state, activities: removeActivity(state.activities, req) })),
       addItem: (req: ActivityItemRequest) => set((state) => ({ ...state, activities: requestAddItem(state.activities, req) })),
@@ -76,7 +91,7 @@ function addActivity(activities: ActivitySummerize[], req: ActivityRequest): Act
     req.sum.list = [req.item];
     return [req.sum];
   }
-  if(!isNonEmptyString(req.item.name)) {
+  if (!isNonEmptyString(req.item.name)) {
     console.log('add null name for act');
     return activities;
   }
@@ -98,7 +113,7 @@ function initActivitySummerize(code: string, username: string): ActivitySummeriz
     list: [],
   };
 }
-export function emptyActivitySummerize(): ActivitySummerize{
+export function emptyActivitySummerize(): ActivitySummerize {
   return {
     code: '',
     createTime: new Date(),
@@ -106,14 +121,14 @@ export function emptyActivitySummerize(): ActivitySummerize{
     list: []
   };
 }
-export function emptyActivity(): Activity{
+export function emptyActivity(): Activity {
   return {
     name: '',
     money: 0,
     people: [],
   };
 }
-export function emptyActivityItem(): ActivityItem{
+export function emptyActivityItem(): ActivityItem {
   return {
     user: '',
     count: 1,
@@ -149,7 +164,7 @@ function requestAddItem(activities: ActivitySummerize[], req: ActivityItemReques
   if (activities.length === 0) {
     return [];
   }
-  if(!isNonEmptyString(req.item.user)) {
+  if (!isNonEmptyString(req.item.user)) {
     console.log('add null user for act item');
     return activities;
   }

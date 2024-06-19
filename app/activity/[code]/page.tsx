@@ -32,7 +32,7 @@ const initActivityList = (activitySum: ActivitySummerize): ActivityShadow[] => {
 function ActivityCodePage({ params }
     : { params: { code: string } }) {
     const getActivitySum: (code: string) => ActivitySummerize = useActivityStore((state) => state.getActivitySum);
-    const setStoreActivitySum: (act: ActivitySummerize) => ActivitySummerize = useActivityStore((state) => state.setActivitySum);
+    const setStoreActivitySum: (act: ActivitySummerize) => void = useActivityStore((state) => state.setActivitySum);
     const addActivity: (req: ActivityRequest) => void = useActivityStore((state) => state.addActivity);
     const removeActivity: (req: ActivityRequest) => void = useActivityStore((state) => state.removeActivity);
     const addItem: (req: ActivityItemRequest) => void = useActivityStore((state) => state.addItem);

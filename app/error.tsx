@@ -20,9 +20,6 @@ export default function Error({
         <h1 className="font-semibold text-lg md:text-2xl">
           Error !
         </h1>
-        <p>
-          {error}
-        </p>
       <button onClick={() => reset()}>Try again</button>
       </div>
     </main>

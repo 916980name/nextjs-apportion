@@ -10,7 +10,7 @@ export const fixTinaResults = <T>(data: T): T => {
   }
 };
 
-export function checkObjectIsEmpty(result) {
+export function checkObjectIsEmpty(result: any) {
   return result === undefined || result === null || Object.keys(result).length === 0;
 }
 

@@ -8,7 +8,7 @@ import { useActivityStore } from "../utils/store";
 
 export type handleChangeSuc<T> = (obj: T) => void;
 
-export function UserNameComponent({ handleChangeSuc }: { handleChangeSuc: handleChangeSuc<string> }) {
+export function UserNameComponent({ handleChangeSuc }: { handleChangeSuc?: handleChangeSuc<string> }) {
     const storeUsername = useActivityStore((state) => state.username);
     const storeSetUsername = useActivityStore((state) => state.setUsername);
     const [username, setUsername] = useState(storeUsername);

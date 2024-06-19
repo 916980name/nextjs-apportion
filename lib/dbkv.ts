@@ -8,14 +8,14 @@ const ACTIVITY_KEY_PREFIX = 'act:'
 const ACTIVITY_OWNER_KEY_PREFIX = 'own:'
 const DEFAULT_TTL = 60 * 60 * 6; // 6 hour
 
-export async function GET_activity(code: string) {
+export async function GET_activity(code: string): Promise<ActivitySummerize> {
   const obj = await kv.get(ACTIVITY_KEY_PREFIX + code);
   if (checkObjectIsEmpty(obj)) {
     // return NextResponse.json(null, { status: 404 });
-    return null;
+    return Promise.reject("Empty Obj");
   } else {
     // return NextResponse.json(JSON.stringify(obj));
-    return obj;
+    return obj as ActivitySummerize;
   }
 }
 

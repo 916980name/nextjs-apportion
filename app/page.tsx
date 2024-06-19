@@ -3,7 +3,7 @@
 import Locale from "app/locales";
 import { isNonEmptyString } from "./utils/calcu";
 import { useActivityStore } from "./utils/store";
-import { WelcomePage } from "./welcome/page";
+import WelcomePage from "./welcome/page";
 
 
 export default async function IndexPage() {

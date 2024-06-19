@@ -2,7 +2,7 @@
 import { UserNameComponent } from 'app/settings/username-widget';
 import { usePathname, useRouter } from 'next/navigation';
 
-export function WelcomePage() {
+function WelcomePage() {
   const router = useRouter();
   const reqPath = usePathname();
 
@@ -18,3 +18,5 @@ export function WelcomePage() {
       </div>
   );
 }
+
+export default WelcomePage;
