@@ -494,6 +494,7 @@ const cn = {
     Sync: "同步",
     Config: "配置",
     Remove: "移除",
+    Operate: "操作",
   },
   Exporter: {
     Description: {

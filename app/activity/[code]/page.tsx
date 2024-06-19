@@ -230,7 +230,7 @@ function ActivityCodePage({ params }
                 <div className="columns-2">
                     <Button onClick={doUpload} disabled={loading} className="mx-1 my-1 bg-cyan-600">{Locale.Activity.Upload}</Button>
                     <Button onClick={doSync} disabled={loading} className="mx-1 my-1 bg-cyan-600">{Locale.Activity.Sync}</Button>
-                    <Button onClick={doCalculate} disabled={loading} className="mx-1 my-1 bg-rose-700">{Locale.Activity.Calculate}</Button>
+                    <Button onClick={doCalculate} disabled={loading} className="mx-1 my-1 bg-teal-500">{Locale.Activity.Calculate}</Button>
                     <ClipboardCopy copyText={fullUrl} className="mx-1 my-1" />
                 </div>
             </div>
@@ -246,9 +246,9 @@ function ActivityCodePage({ params }
                                 <div>{shadow.name}</div>
                                 <div>{Locale.Activity.Cost} {shadow.money}</div>
                             </div>
-                            <div className="columns-2">
-                                <Button onClick={() => handleAddItem(shadow)} className="bg-cblue">{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
-                                <Button onClick={() => handleRemoveAct(shadow)} variant={"destructive"}>{Locale.UI.Remove}{Locale.Activity.Title}</Button>
+                            <div className="columns-2 flex justify-end">
+                                <Button className="bg-cblue mx-1" onClick={() => handleAddItem(shadow)}>{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
+                                <Button className="mx-1" onClick={() => handleRemoveAct(shadow)} variant={"destructive"}>{Locale.UI.Remove}{Locale.Activity.Title}</Button>
                             </div>
                         </div>
                         {shadow.people.map((people, index) => (

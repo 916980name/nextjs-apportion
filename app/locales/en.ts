@@ -496,6 +496,7 @@ const en: LocaleType = {
     Sync: "Sync",
     Config: "Config",
     Remove: "Remove",
+    Operate: "Operate",
   },
   Exporter: {
     Description: {

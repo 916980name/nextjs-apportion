@@ -17,9 +17,9 @@ function ActivityPage() {
     return (
         <>
             <div className="flex justify-between items-center">
-                <h1 className="font-semibold text-lg md:text-2xl">{Locale.Activity.Table}</h1>
+                <h1 className="font-semibold text-lg m-2 md:text-2xl">{Locale.Activity.Table}</h1>
                 <div>
-                    <Button onClick={newActivity} className="bg-cblue">{Locale.Activity.New}</Button>
+                    <Button className="bg-cblue m-1" onClick={newActivity}>{Locale.Activity.New}</Button>
                 </div>
             </div>
             <div>

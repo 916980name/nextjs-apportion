@@ -40,6 +40,7 @@ interface ActivityStoreState {
   setUsername: (newUsername: string) => void,
   getActivitySum: (code: string) => ActivitySummerize,
   setActivitySum: (act: ActivitySummerize) => void,
+  removeActivitySum: (code: string) => void,
   addActivity: (req: ActivityRequest) => void,
   removeActivity: (req: ActivityRequest) => void,
   addItem: (req: ActivityItemRequest) => void,
@@ -57,6 +58,7 @@ export const useActivityStore = create<ActivityStoreState>()(
       setUsername: (newUsername: string) => set((state) => ({ ...state, username: newUsername })),
       getActivitySum: (code: string) => getActivitySum(get().activities, get().username, code),
       setActivitySum: (act: ActivitySummerize) => set((state) => ({ ...state, activities: setActivitySum(state.activities, act) })),
+      removeActivitySum: (code: string) => set((state) => ({ ...state, activities: removeActivitySum(state.activities, code) })),
       addActivity: (req: ActivityRequest) => set((state) => ({ ...state, activities: addActivity(state.activities, req) })),
       removeActivity: (req: ActivityRequest) => set((state) => ({ ...state, activities: removeActivity(state.activities, req) })),
       addItem: (req: ActivityItemRequest) => set((state) => ({ ...state, activities: requestAddItem(state.activities, req) })),
@@ -158,6 +160,13 @@ function setActivitySum(activities: ActivitySummerize[], act: ActivitySummerize)
   }
   Object.assign(foundActivitySum, act);
   return activities;
+}
+
+function removeActivitySum(activities: ActivitySummerize[], code: string): ActivitySummerize[] {
+  if (activities.length === 0) {
+    return activities;
+  }
+  return activities.filter(activity => activity.code !== code);
 }
 
 function requestAddItem(activities: ActivitySummerize[], req: ActivityItemRequest) {
