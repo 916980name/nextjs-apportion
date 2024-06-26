@@ -22,6 +22,7 @@ export type ActivityItem = {
 export type Activity = {
   name: string;
   money: number;
+  contributor: string;
   people: ActivityItem[];
 }
 
@@ -127,6 +128,7 @@ export function emptyActivity(): Activity {
   return {
     name: '',
     money: 0,
+    contributor: '',
     people: [],
   };
 }

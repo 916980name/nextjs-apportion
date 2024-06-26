@@ -48,3 +48,15 @@ export function isNonEmptyString(str: any): boolean {
 export function generateActivityCode(): string {
   return getFormattedDate() + nanoid(9);
 }
+
+export function mergeCalResultMaps(map1: Map<string, number>, map2: Map<string, number>): Map<string, number> {
+    const mergedMap = new Map<string, number>(map1);
+    map2.forEach((value, key) => {
+        if (mergedMap.has(key)) {
+            mergedMap.set(key, numberWithScale(mergedMap.get(key)! + value, 2));
+        } else {
+            mergedMap.set(key, value);
+        }
+    })
+    return mergedMap;
+}

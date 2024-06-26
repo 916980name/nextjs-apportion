@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GET_activity, SET_activity } from "@/lib/dbkv";
 import Loading from "app/loading";
-import { checkObjectIsEmpty, divideWithScale, numberWithScale, stringToFloat2 } from "app/utils/calcu";
-import { Activity, ActivityItemRequest, ActivityRequest, ActivitySummerize, emptyActivity, emptyActivitySummerize, useActivityStore } from "app/utils/store";
+import { checkObjectIsEmpty, divideWithScale, mergeCalResultMaps, numberWithScale, stringToFloat2 } from "app/utils/calcu";
+import { Activity, ActivityItem, ActivityItemRequest, ActivityRequest, ActivitySummerize, emptyActivity, emptyActivitySummerize, useActivityStore } from "app/utils/store";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Locale from "../../locales";
@@ -79,7 +79,9 @@ function ActivityCodePage({ params }
     };
 
     const handleAddAct = () => {
-        setActivity(emptyActivity());
+        let act = emptyActivity();
+        act.contributor = username;
+        setActivity(act);
         setActivityShow(true);
         if (addActRef.current) {
             addActRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -137,16 +139,12 @@ function ActivityCodePage({ params }
         setActivityList(updatedList);
     }
 
-    const handleRemoveItem = (item: ActivityShadow) => {
-        if (window.confirm(Locale.UI.Confirm + ' ' + Locale.UI.Remove + ' ' + Locale.Activity.Participant)) {
+    const handleRemoveItem = (act: ActivityShadow, people: ActivityItem) => {
+        if (window.confirm(Locale.UI.Confirm + ' ' + Locale.UI.Remove + ' ' + Locale.Activity.Participant + ': ' + people.user)) {
             removeItem({
                 code: params.code,
-                name: item.name,
-                item: {
-                    user: username,
-                    count: item.shadow.count,
-                    money: 0
-                }
+                name: act.name,
+                item: people
             })
             refreshData();
         }
@@ -186,19 +184,28 @@ function ActivityCodePage({ params }
     const doCalculate = () => {
         setCalculating(true)
         const data = { ...activitySum };
-        const resultMap: Map<string, number> = new Map();
+        const resultMap: Map<string, Map<string, number>> = new Map();
 
         data.list.map((activity) => {
             const sum: number = activity.people.reduce((acc, obj) => acc + obj.count, 0);
             const eachPay: number = divideWithScale(activity.money, sum, 2);
+            const contributor = activity.contributor ? activity.contributor : activitySum.creater;
+            const actResultMap: Map<string, number> = new Map();
             activity.people.map((people) => {
                 people.money = numberWithScale(eachPay * people.count, 2);
-                if (resultMap.has(people.user)) {
-                    resultMap.set(people.user, numberWithScale(resultMap.get(people.user)! + people.money, 2));
+                if (actResultMap.has(people.user)) {
+                    actResultMap.set(people.user, numberWithScale(actResultMap.get(people.user)! + people.money, 2));
                 } else {
-                    resultMap.set(people.user, people.money);
+                    actResultMap.set(people.user, people.money);
                 }
             })
+            let record = resultMap.get(contributor);
+            if (record) {
+                record = mergeCalResultMaps(record, actResultMap);
+            } else {
+                record = actResultMap;
+            }
+            resultMap.set(contributor, record);
         })
         setShouldPayMap(resultMap);
         setStoreActivitySum(data);
@@ -241,12 +248,11 @@ function ActivityCodePage({ params }
                         {/* <div key={shadow.name} className="flex justify-between items-center pb-2 border-b-2 border-b-sky-200"> */}
                         {/** ERROR here */}
                         <div key={shadow.name} className="pb-2 border-b-2 border-b-sky-200">
-                            <div className="columns-3">
+                            <div className="grid grid-flow-row gap-2 md:grid-cols-6 grid-cols-3">
                                 <div className="font-semibold text-md">{Locale.Activity.Title} {index + 1}</div>
-                                <div className="font-semibold text-md">{shadow.name}</div>
-                                <div className="font-semibold text-md">{Locale.Activity.Cost} {shadow.money}</div>
-                            </div>
-                            <div className="columns-2 flex justify-end">
+                                <div className="font-semibold text-md"><span className="text-wrap">{shadow.name}</span></div>
+                                <div className="font-semibold text-md">{shadow.contributor} {Locale.Activity.Cost} {shadow.money}</div>
+                                <div></div>
                                 <Button className="bg-cblue mx-1" onClick={() => handleAddItem(shadow)}>{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
                                 <Button className="mx-1" onClick={() => handleRemoveAct(shadow)} variant={"destructive"}>{Locale.UI.Remove}{Locale.Activity.Title}</Button>
                             </div>
@@ -256,7 +262,7 @@ function ActivityCodePage({ params }
                                 <div>{Locale.Activity.Participant} {people.user}</div>
                                 <div>{Locale.Activity.ParticipantCount}: {people.count}</div>
                                 <div>{Locale.Activity.Apportion}: {people.money}</div>
-                                <Button onClick={() => handleRemoveItem(shadow)} variant={"destructive"} size={"sm"}>{Locale.UI.Remove}</Button>
+                                <Button onClick={() => handleRemoveItem(shadow, people)} variant={"destructive"} size={"sm"}>{Locale.UI.Remove}</Button>
                             </div>
                         ))}
                         {shadow.shadow.show &&
@@ -270,8 +276,8 @@ function ActivityCodePage({ params }
                                         onChange={(e) => setItem(shadow, parseInt(e.currentTarget.value.trim()), shadow.shadow.user)} />
                                 </div>
                                 <div className="flex justify-between items-right">
-                                    <Button onClick={() => confirmAddItem(shadow)} variant={"secondary"}>&#9989;{Locale.UI.Confirm}</Button>
-                                    <Button onClick={() => cancelAddItem(shadow)} variant={"secondary"}>&#10060;{Locale.UI.Cancel}</Button>
+                                    <Button onClick={() => confirmAddItem(shadow)} variant={"secondary"}>&#9989; {Locale.UI.Confirm}</Button>
+                                    <Button onClick={() => cancelAddItem(shadow)} variant={"secondary"}>&#10060; {Locale.UI.Cancel}</Button>
                                 </div>
                             </div>
                         }
@@ -282,6 +288,10 @@ function ActivityCodePage({ params }
                     <div className="rounded-md shadow-md my-3 mx-1 py-3 px-1">
                         <div>{Locale.Activity.AddOne} {Locale.Activity.Title}</div>
                         <div className="mb-1.5">
+                            <Input type="text" placeholder={Locale.Activity.Contributor} value={activity.contributor}
+                                onChange={(e) => setActivity({ ...activity, contributor: e.currentTarget.value.trim() })} />
+                        </div>
+                        <div className="mb-1.5">
                             <Input type="text" placeholder={Locale.Activity.Name} value={activity.name}
                                 onChange={(e) => setActivity({ ...activity, name: e.currentTarget.value.trim() })} />
                         </div>
@@ -290,8 +300,8 @@ function ActivityCodePage({ params }
                                 onChange={(e) => setActivity({ ...activity, money: stringToFloat2(e.currentTarget.value.trim()) })} />
                         </div>
                         <div className="flex justify-between items-right">
-                            <Button onClick={confirmAddAct} variant={"secondary"}>&#9989;{Locale.UI.Confirm}</Button>
-                            <Button onClick={cancelAddAct} variant={"secondary"}>&#10060;{Locale.UI.Cancel}</Button>
+                            <Button onClick={confirmAddAct} variant={"secondary"}>&#9989; {Locale.UI.Confirm}</Button>
+                            <Button onClick={cancelAddAct} variant={"secondary"}>&#10060; {Locale.UI.Cancel}</Button>
                         </div>
                     </div>
                 }
@@ -316,17 +326,29 @@ function ActivityCodePage({ params }
     );
 }
 
-const UserMapComponent = ({ userMap }: { userMap: Map<string, number> }) => (
+const UserMapComponent = ({ userMap }: { userMap: Map<string, Map<string, number>> }) => (
     <div className="flex items-center justify-center">
-        <div className="w-screen">
+        <div className="w-5/12">
             <h1>{Locale.Activity.ShouldPay}</h1>
         </div>
         <div className="w-screen">
             <ul>
-                {Array.from(userMap).map(([username, money]) => (
-                    <li key={username}>
-                        <strong>{username}</strong> : <strong>{money}</strong>
-                    </li>
+                {Array.from(userMap).map(([username, resultMap]) => (
+                    <>
+                        <li className="border-4 border-dashed my-2">
+                            <strong>{username} {Locale.Activity.Receive}:</strong>
+                            <ul className="pl-8">
+                                {Array.from(resultMap).map(([username, money]) => (
+                                    <li key={username}>
+                                        <div>
+                                            {username} : {money}
+                                        </div>
+                                    </li>
+                                ))
+                                }
+                            </ul>
+                        </li>
+                    </>
                 ))}
             </ul>
         </div>
