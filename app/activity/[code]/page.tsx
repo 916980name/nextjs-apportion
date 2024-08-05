@@ -49,6 +49,7 @@ function ActivityCodePage({ params }
     const [calculating, setCalculating] = useState(false);
     const [shouldPayMap, setShouldPayMap] = useState(new Map());
     const [fullUrl, setFullUrl] = useState('');
+    const [usernameList, setUsernameList] = useState<string[]>([]);
     const pathName = usePathname();
 
     const refreshData = () => {
@@ -68,8 +69,34 @@ function ActivityCodePage({ params }
         refreshData()
     }, [params.code, removeItem, addItem, removeActivity, addActivity])
 
+    useEffect(() => {
+        const uniqueUsernamesSet: Set<string> = new Set();
+        activityList.forEach(activity => {
+            activity.people.forEach(person => {
+                uniqueUsernamesSet.add(person.user);
+            });
+        });
+        const resultA: string[] = []
+        uniqueUsernamesSet.forEach(e => {
+            resultA.push(e)
+        })
+        resultA.sort((a, b) => {
+            if (typeof a === 'string' && typeof b === 'string') {
+                return a.localeCompare(b); // Sort strings alphabetically
+            } else if (typeof a === 'number' && typeof b === 'number') {
+                return a - b; // Sort numbers in ascending order
+            } else {
+                // Handle cases where one element is a string and the other is a number
+                // You can decide how you want to order these mixed types
+                return typeof a === 'string' ? -1 : 1; // Place strings before numbers
+            }
+        });
+
+        setUsernameList(resultA)
+    }, [activityList])
+
     const handleRemoveAct = (item: Activity) => {
-        if (window.confirm(Locale.UI.Confirm + ' ' + Locale.UI.Remove + ' ' + Locale.Activity.Title)) {
+        if (window.confirm(Locale.UI.Confirm + ' ' + Locale.UI.Remove + ' ' + Locale.Activity.Title + ': ' + item.name)) {
             removeActivity({
                 sum: activitySum,
                 item: item,
@@ -252,9 +279,6 @@ function ActivityCodePage({ params }
                                 <div className="font-semibold text-md">{Locale.Activity.Title} {index + 1}</div>
                                 <div className="font-semibold text-md"><span className="text-wrap">{shadow.name}</span></div>
                                 <div className="font-semibold text-md">{shadow.contributor} {Locale.Activity.Cost} {shadow.money}</div>
-                                <div></div>
-                                <Button className="bg-cblue mx-1" onClick={() => handleAddItem(shadow)}>{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
-                                <Button className="mx-1" onClick={() => handleRemoveAct(shadow)} variant={"destructive"}>{Locale.UI.Remove}{Locale.Activity.Title}</Button>
                             </div>
                         </div>
                         {shadow.people.map((people, index) => (
@@ -272,8 +296,15 @@ function ActivityCodePage({ params }
                                         onChange={(e) => setItem(shadow, shadow.shadow.count, e.currentTarget.value.trim())} />
                                 </div>
                                 <div className="mb-1.5">
-                                    <Input type="number" placeholder={Locale.Activity.ParticipantCount} value={shadow.shadow.count}
+                                    <ColorfulUsernameList list={usernameList} removeList={shadow.people.map(p => p.user)}
+                                        setFunc={(e) => setItem(shadow, shadow.shadow.count, e)}
+                                    ></ColorfulUsernameList>
+                                </div>
+                                <div className="mb-1.5 flex space-x-4">
+                                    <Input className="flex-1" type="number" placeholder={Locale.Activity.ParticipantCount} value={shadow.shadow.count}
                                         onChange={(e) => setItem(shadow, parseInt(e.currentTarget.value.trim()), shadow.shadow.user)} />
+                                    <Button className="flex-1" onClick={() => setItem(shadow, shadow.shadow.count - 1, shadow.shadow.user)} variant={"outline"}>-1</Button>
+                                    <Button className="flex-1" onClick={() => setItem(shadow, shadow.shadow.count + 1, shadow.shadow.user)} variant={"outline"}>+1</Button>
                                 </div>
                                 <div className="flex justify-between items-right">
                                     <Button onClick={() => confirmAddItem(shadow)} variant={"secondary"}>&#9989; {Locale.UI.Confirm}</Button>
@@ -281,6 +312,12 @@ function ActivityCodePage({ params }
                                 </div>
                             </div>
                         }
+                        <div className="pb-1 border-t-2 border-t-sky-200">
+                            <div className="pt-1 flex flex-row-reverse">
+                                <Button className="mx-1" onClick={() => handleRemoveAct(shadow)} variant={"destructive"}>{Locale.UI.Remove} {Locale.Activity.Title} {shadow.name}</Button>
+                                <Button className="bg-cblue mx-1" onClick={() => handleAddItem(shadow)}>{Locale.Activity.AddOne + Locale.Activity.Participant}</Button>
+                            </div>
+                        </div>
                     </div>
                 ))}
 
@@ -354,4 +391,33 @@ const UserMapComponent = ({ userMap }: { userMap: Map<string, Map<string, number
         </div>
     </div>
 );
+const ColorfulUsernameList = ({ list, removeList, setFunc }
+    : {
+        list: string[],
+        removeList: string[],
+        setFunc: (username: string) => void
+    }) => {
+    const colors = ['lightblue', 'lightgreen', 'lightcoral', 'lightsalmon', 'lightsteelblue']; // Define a set of colors
+    const [filteredList, setFilteredList] = useState<string[]>([]);
+
+    useEffect(() => {
+        setFilteredList(list)
+        if (removeList && removeList.length > 0) {
+            const result = list.filter(itemA => !removeList.includes(itemA));
+            setFilteredList(result)
+        }
+    }, [])
+
+    return (
+        <div className="flex flex-wrap">
+            {filteredList.map((username, index) => (
+                <div className="px-2 py-2 mb-1 mr-2"
+                    onClick={() => setFunc(username)}
+                    key={index} style={{ backgroundColor: colors[index % colors.length] }}>
+                    {username}
+                </div>
+            ))}
+        </div>
+    );
+};
 export default ActivityCodePage;
